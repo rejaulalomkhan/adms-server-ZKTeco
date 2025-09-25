@@ -33,6 +33,12 @@ class DeviceController extends Controller
         $data['log'] = DB::table('finger_log')->select('id','data','url')->orderBy('id','DESC')->get();
         return view('devices.log',$data);
     }
+
+    public function Guide(Request $request)
+    {
+        $data['lable'] = "Device Setup Guide";
+        return view('devices.guide', $data);
+    }
     public function Attendance() {
        //$attendances = Attendance::latest('timestamp')->orderBy('id','DESC')->paginate(15);
        $attendances = DB::table('attendances')->select('id','sn','table','stamp','employee_id','timestamp','status1','status2','status3','status4','status5')->orderBy('id','DESC')->paginate(15);
