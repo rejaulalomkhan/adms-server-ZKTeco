@@ -73,6 +73,18 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('holidays.index') }}">Holidays</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('overtime.index') }}">Overtime</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('reports.index') }}">Reports</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('offices.index') }}">Offices</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('user-offices.index') }}">User Offices</a>
+                    </li>
                 </ul>
             </div>
             <span class="navbar-text d-none d-lg-block">

@@ -11,7 +11,14 @@ class DashboardController extends Controller
     public function summary(Request $request)
     {
         $range = $request->query('range', 'today');
-        [$start, $end] = $this->resolveRange($range);
+        $dateParam = $request->query('date');
+        if ($dateParam) {
+            $day = Carbon::parse($dateParam);
+            $start = $day->copy()->startOfDay();
+            $end = $day->copy()->endOfDay();
+        } else {
+            [$start, $end] = $this->resolveRange($range);
+        }
 
         $totalEmployees = DB::table('users')->count();
         $present = DB::table('attendances')
@@ -37,6 +44,21 @@ class DashboardController extends Controller
             'late' => $late,
             'absent' => $absent,
         ]);
+    }
+
+    public function recentAttendance(Request $request)
+    {
+        $limit = (int) $request->query('limit', 20);
+        $limit = max(1, min(100, $limit));
+
+        $rows = DB::table('attendances')
+            ->leftJoin('users', 'users.id', '=', 'attendances.employee_id')
+            ->select('attendances.id', 'attendances.employee_id', 'users.name as employee_name', 'attendances.timestamp', 'attendances.sn')
+            ->orderBy('attendances.timestamp', 'desc')
+            ->limit($limit)
+            ->get();
+
+        return response()->json($rows);
     }
 
     private function resolveRange(string $range): array

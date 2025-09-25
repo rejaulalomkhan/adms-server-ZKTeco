@@ -20,6 +20,10 @@ use App\Http\Controllers\ShiftRotationController;
 use App\Http\Controllers\ShiftAssignmentController;
 use App\Http\Controllers\DashboardController as WebDashboardController;
 use App\Http\Controllers\HolidayController;
+use App\Http\Controllers\OvertimeController;
+use App\Http\Controllers\ReportsController;
+use App\Http\Controllers\OfficeController;
+use App\Http\Controllers\UserOfficeController;
 
 
 Route::get('devices', [DeviceController::class, 'Index'])->name('devices.index');
@@ -66,6 +70,41 @@ Route::prefix('holidays')->name('holidays.')->group(function () {
     Route::get('/{holiday}/edit', [HolidayController::class, 'edit'])->name('edit');
     Route::put('/{holiday}', [HolidayController::class, 'update'])->name('update');
     Route::delete('/{holiday}', [HolidayController::class, 'destroy'])->name('destroy');
+});
+
+// Overtime
+Route::prefix('overtime')->name('overtime.')->group(function(){
+    Route::get('/', [OvertimeController::class, 'index'])->name('index');
+    Route::get('/data', [OvertimeController::class, 'data'])->name('data');
+    Route::post('/calculate', [OvertimeController::class, 'calculate'])->name('calculate');
+    Route::post('/{overtime}/approve', [OvertimeController::class, 'approve'])->name('approve');
+});
+
+// Reports
+Route::prefix('reports')->name('reports.')->group(function(){
+    Route::get('/', [ReportsController::class, 'index'])->name('index');
+    Route::get('/attendance', [ReportsController::class, 'attendanceData'])->name('attendance');
+    Route::get('/lateness', [ReportsController::class, 'latenessData'])->name('lateness');
+    Route::get('/absence', [ReportsController::class, 'absenceData'])->name('absence');
+});
+
+// Offices CRUD
+Route::prefix('offices')->name('offices.')->group(function(){
+    Route::get('/', [OfficeController::class, 'index'])->name('index');
+    Route::get('/data', [OfficeController::class, 'data'])->name('data');
+    Route::get('/create', [OfficeController::class, 'create'])->name('create');
+    Route::post('/', [OfficeController::class, 'store'])->name('store');
+    Route::get('/{office}/edit', [OfficeController::class, 'edit'])->name('edit');
+    Route::put('/{office}', [OfficeController::class, 'update'])->name('update');
+    Route::delete('/{office}', [OfficeController::class, 'destroy'])->name('destroy');
+});
+
+// Users -> Office assignment
+Route::prefix('user-offices')->name('user-offices.')->group(function(){
+    Route::get('/', [UserOfficeController::class, 'index'])->name('index');
+    Route::get('/data', [UserOfficeController::class, 'data'])->name('data');
+    Route::get('/{user}/edit', [UserOfficeController::class, 'edit'])->name('edit');
+    Route::put('/{user}', [UserOfficeController::class, 'update'])->name('update');
 });
 
 // Shift Rotations CRUD

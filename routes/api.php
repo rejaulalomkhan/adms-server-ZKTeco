@@ -34,3 +34,4 @@ Route::get('/scheduling/preview/{employeeId}', [SchedulingController::class, 'pr
 
 // Dashboard summary (default today, range=yesterday|this_week|this_month)
 Route::get('/dashboard/summary', [DashboardController::class, 'summary']);
+Route::get('/dashboard/recent-attendance', [DashboardController::class, 'recentAttendance']);

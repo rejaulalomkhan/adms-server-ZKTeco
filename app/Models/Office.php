@@ -12,6 +12,11 @@ class Office extends Model
     protected $fillable = [
         'area_id', 'name', 'code',
     ];
+
+    public function area()
+    {
+        return $this->belongsTo(Area::class);
+    }
 }
 
 
