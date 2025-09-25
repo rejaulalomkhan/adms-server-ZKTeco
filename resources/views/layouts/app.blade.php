@@ -70,6 +70,9 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('shift-assignments.index') }}">Shift Assignments</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('holidays.index') }}">Holidays</a>
+                    </li>
                 </ul>
             </div>
             <span class="navbar-text d-none d-lg-block">

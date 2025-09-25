@@ -19,6 +19,7 @@ use App\Http\Controllers\ShiftController;
 use App\Http\Controllers\ShiftRotationController;
 use App\Http\Controllers\ShiftAssignmentController;
 use App\Http\Controllers\DashboardController as WebDashboardController;
+use App\Http\Controllers\HolidayController;
 
 
 Route::get('devices', [DeviceController::class, 'Index'])->name('devices.index');
@@ -55,6 +56,17 @@ Route::prefix('shifts')->name('shifts.')->group(function () {
 // Dashboard page
 Route::get('/dashboard', [WebDashboardController::class, 'summary'])->name('dashboard.json');
 Route::view('/dashboard/ui', 'dashboard.index')->name('dashboard.index');
+
+// Holidays CRUD
+Route::prefix('holidays')->name('holidays.')->group(function () {
+    Route::get('/', [HolidayController::class, 'index'])->name('index');
+    Route::get('/data', [HolidayController::class, 'data'])->name('data');
+    Route::get('/create', [HolidayController::class, 'create'])->name('create');
+    Route::post('/', [HolidayController::class, 'store'])->name('store');
+    Route::get('/{holiday}/edit', [HolidayController::class, 'edit'])->name('edit');
+    Route::put('/{holiday}', [HolidayController::class, 'update'])->name('update');
+    Route::delete('/{holiday}', [HolidayController::class, 'destroy'])->name('destroy');
+});
 
 // Shift Rotations CRUD
 Route::prefix('shift-rotations')->name('shift-rotations.')->group(function () {
