@@ -22,6 +22,22 @@
                 <th>Action</th>
             </tr>
         </thead>
+        <tbody>
+            @if(isset($rotations) && count($rotations))
+                @foreach($rotations as $r)
+                <tr>
+                    <td>{{ $r->id }}</td>
+                    <td>{{ optional($r->user)->name }}</td>
+                    <td>{{ $r->cycle_length_weeks }}</td>
+                    <td>{{ $r->effective_date }}</td>
+                    <td>{{ $r->expiry_date }}</td>
+                    <td>
+                        <a href="{{ route('shift-rotations.edit', $r->id) }}" class="btn btn-sm btn-outline-primary">Edit</a>
+                    </td>
+                </tr>
+                @endforeach
+            @endif
+        </tbody>
     </table>
 </div>
 
@@ -42,17 +58,9 @@
 $(function() {
   $('#rotations-table').DataTable({
     processing: true,
-    serverSide: true,
+    serverSide: false,
     responsive: true,
-    ajax: '{{ route('shift-rotations.data') }}',
-    columns: [
-      { data: 'id', name: 'id' },
-      { data: 'employee', name: 'employee', orderable: false, searchable: true },
-      { data: 'cycle_length_weeks', name: 'cycle_length_weeks' },
-      { data: 'effective_date', name: 'effective_date' },
-      { data: 'expiry_date', name: 'expiry_date' },
-      { data: 'action', orderable: false, searchable: false },
-    ],
+    order: [[0,'desc']],
     dom: 'Bfrtip',
     buttons: [
       { extend: 'copy', className: 'btn btn-sm btn-outline-secondary' },

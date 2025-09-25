@@ -13,6 +13,7 @@ class ShiftAssignmentController extends Controller
     public function index()
     {
         $data['lable'] = 'Manual Shift Assignments';
+        $data['assignments'] = ShiftAssignment::with(['user','shift'])->orderBy('id','desc')->get();
         return view('shift_assignments.index', $data);
     }
 

@@ -15,6 +15,7 @@ class ShiftRotationController extends Controller
     public function index()
     {
         $data['lable'] = 'Shift Rotations';
+        $data['rotations'] = ShiftRotation::with('user')->orderBy('id','desc')->get();
         return view('shift_rotations.index', $data);
     }
 

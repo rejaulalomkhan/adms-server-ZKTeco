@@ -24,6 +24,24 @@
                 <th>Action</th>
             </tr>
         </thead>
+        <tbody>
+            @if(isset($assignments) && count($assignments))
+                @foreach($assignments as $a)
+                <tr>
+                    <td>{{ $a->id }}</td>
+                    <td>{{ optional($a->user)->name }}</td>
+                    <td>{{ optional($a->shift)->name }}</td>
+                    <td>{{ $a->start_date }}</td>
+                    <td>{{ $a->end_date }}</td>
+                    <td>{{ $a->priority }}</td>
+                    <td>{{ $a->reason }}</td>
+                    <td>
+                        <a href="{{ route('shift-assignments.edit', $a->id) }}" class="btn btn-sm btn-outline-primary">Edit</a>
+                    </td>
+                </tr>
+                @endforeach
+            @endif
+        </tbody>
     </table>
 </div>
 
@@ -44,19 +62,9 @@
 $(function() {
   $('#assignments-table').DataTable({
     processing: true,
-    serverSide: true,
+    serverSide: false,
     responsive: true,
-    ajax: '{{ route('shift-assignments.data') }}',
-    columns: [
-      { data: 'id', name: 'id' },
-      { data: 'employee', name: 'employee', orderable: false },
-      { data: 'shift_name', name: 'shift_name', orderable: false },
-      { data: 'start_date', name: 'start_date' },
-      { data: 'end_date', name: 'end_date' },
-      { data: 'priority', name: 'priority' },
-      { data: 'reason', name: 'reason' },
-      { data: 'action', orderable: false, searchable: false },
-    ],
+    order: [[0,'desc']],
     dom: 'Bfrtip',
     buttons: [
       { extend: 'copy', className: 'btn btn-sm btn-outline-secondary' },

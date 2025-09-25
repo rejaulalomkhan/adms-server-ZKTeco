@@ -11,6 +11,7 @@ class ShiftController extends Controller
     public function index()
     {
         $data['lable'] = 'Shifts';
+        $data['shifts'] = Shift::orderBy('id', 'desc')->get();
         return view('shifts.index', $data);
     }
 

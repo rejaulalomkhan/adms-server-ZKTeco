@@ -27,6 +27,27 @@
                 <th>Action</th>
             </tr>
         </thead>
+        <tbody>
+            @if(isset($shifts) && count($shifts))
+                @foreach($shifts as $shift)
+                <tr>
+                    <td>{{ $shift->id }}</td>
+                    <td>{{ $shift->name }}</td>
+                    <td>{{ $shift->code }}</td>
+                    <td>{{ $shift->start_time }}</td>
+                    <td>{{ $shift->end_time }}</td>
+                    <td>{{ $shift->is_overnight ? 'Yes' : 'No' }}</td>
+                    <td>{{ $shift->break_minutes }}</td>
+                    <td>{{ $shift->grace_minutes }}</td>
+                    <td>{{ $shift->expected_hours }}</td>
+                    <td>{{ $shift->active ? 'Yes' : 'No' }}</td>
+                    <td>
+                        <a href="{{ route('shifts.edit', $shift->id) }}" class="btn btn-sm btn-outline-primary">Edit</a>
+                    </td>
+                </tr>
+                @endforeach
+            @endif
+        </tbody>
     </table>
 </div>
 
@@ -47,22 +68,9 @@
 $(function() {
   $('#shifts-table').DataTable({
     processing: true,
-    serverSide: true,
+    serverSide: false,
     responsive: true,
-    ajax: '{{ route('shifts.data') }}',
-    columns: [
-      { data: 'id', name: 'id' },
-      { data: 'name', name: 'name' },
-      { data: 'code', name: 'code' },
-      { data: 'start_time', name: 'start_time' },
-      { data: 'end_time', name: 'end_time' },
-      { data: 'is_overnight', name: 'is_overnight', render: function(val){ return val ? 'Yes' : 'No'; } },
-      { data: 'break_minutes', name: 'break_minutes' },
-      { data: 'grace_minutes', name: 'grace_minutes' },
-      { data: 'expected_hours', name: 'expected_hours' },
-      { data: 'active', name: 'active' },
-      { data: 'action', orderable: false, searchable: false },
-    ],
+    order: [[0,'desc']],
     dom: 'Bfrtip',
     buttons: [
       { extend: 'copy', className: 'btn btn-sm btn-outline-secondary' },
