@@ -12,6 +12,11 @@ class Area extends Model
     protected $fillable = [
         'name', 'parent_id',
     ];
+
+    public function parent()
+    {
+        return $this->belongsTo(Area::class, 'parent_id');
+    }
 }
 
 

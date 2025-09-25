@@ -24,6 +24,7 @@ use App\Http\Controllers\OvertimeController;
 use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\OfficeController;
 use App\Http\Controllers\UserOfficeController;
+use App\Http\Controllers\AreaController;
 
 
 Route::get('devices', [DeviceController::class, 'Index'])->name('devices.index');
@@ -105,6 +106,17 @@ Route::prefix('user-offices')->name('user-offices.')->group(function(){
     Route::get('/data', [UserOfficeController::class, 'data'])->name('data');
     Route::get('/{user}/edit', [UserOfficeController::class, 'edit'])->name('edit');
     Route::put('/{user}', [UserOfficeController::class, 'update'])->name('update');
+});
+
+// Areas CRUD
+Route::prefix('areas')->name('areas.')->group(function(){
+    Route::get('/', [AreaController::class, 'index'])->name('index');
+    Route::get('/data', [AreaController::class, 'data'])->name('data');
+    Route::get('/create', [AreaController::class, 'create'])->name('create');
+    Route::post('/', [AreaController::class, 'store'])->name('store');
+    Route::get('/{area}/edit', [AreaController::class, 'edit'])->name('edit');
+    Route::put('/{area}', [AreaController::class, 'update'])->name('update');
+    Route::delete('/{area}', [AreaController::class, 'destroy'])->name('destroy');
 });
 
 // Shift Rotations CRUD
