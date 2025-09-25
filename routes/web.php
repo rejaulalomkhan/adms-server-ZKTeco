@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DeviceController;
 use App\Http\Controllers\AbsensiSholatController;
 use App\Http\Controllers\iclockController;
+use App\Http\Controllers\ShiftController;
 
 
 Route::get('devices', [DeviceController::class, 'Index'])->name('devices.index');
@@ -35,4 +36,15 @@ Route::get('/iclock/getrequest', [iclockController::class, 'getrequest']);
 
 Route::get('/', function () {
     return redirect('devices') ;
+});
+
+// Shifts CRUD
+Route::prefix('shifts')->name('shifts.')->group(function () {
+    Route::get('/', [ShiftController::class, 'index'])->name('index');
+    Route::get('/data', [ShiftController::class, 'data'])->name('data');
+    Route::get('/create', [ShiftController::class, 'create'])->name('create');
+    Route::post('/', [ShiftController::class, 'store'])->name('store');
+    Route::get('/{shift}/edit', [ShiftController::class, 'edit'])->name('edit');
+    Route::put('/{shift}', [ShiftController::class, 'update'])->name('update');
+    Route::delete('/{shift}', [ShiftController::class, 'destroy'])->name('destroy');
 });

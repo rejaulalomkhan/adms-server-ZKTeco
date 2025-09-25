@@ -2,6 +2,8 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\SchedulingController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\iclockController;
 
 /*
@@ -26,3 +28,9 @@ use App\Http\Controllers\iclockController;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+// Scheduling preview
+Route::get('/scheduling/preview/{employeeId}', [SchedulingController::class, 'preview']);
+
+// Dashboard summary (default today, range=yesterday|this_week|this_month)
+Route::get('/dashboard/summary', [DashboardController::class, 'summary']);
