@@ -47,6 +47,9 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav">
                     <li class="nav-item">
+                        <a class="nav-link" href="{{ route('dashboard.index') }}">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="{{ route('devices.index') }}">Device</a>
                     </li>
                     <li class="nav-item">
@@ -60,6 +63,12 @@
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('shifts.index') }}">Shifts</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('shift-rotations.index') }}">Shift Rotations</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('shift-assignments.index') }}">Shift Assignments</a>
                     </li>
                 </ul>
             </div>

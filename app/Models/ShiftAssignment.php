@@ -12,6 +12,16 @@ class ShiftAssignment extends Model
     protected $fillable = [
         'employee_id', 'shift_id', 'start_date', 'end_date', 'priority', 'reason',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'employee_id');
+    }
+
+    public function shift()
+    {
+        return $this->belongsTo(Shift::class);
+    }
 }
 
 
