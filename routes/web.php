@@ -31,6 +31,11 @@ Route::get('devices', [DeviceController::class, 'Index'])->name('devices.index')
 Route::get('devices-log', [DeviceController::class, 'DeviceLog'])->name('devices.DeviceLog');
 Route::get('finger-log', [DeviceController::class, 'FingerLog'])->name('devices.FingerLog');
 Route::get('attendance', [DeviceController::class, 'Attendance'])->name('devices.Attendance');
+Route::get('devices/create', [DeviceController::class, 'create'])->name('devices.create');
+Route::post('devices', [DeviceController::class, 'store'])->name('devices.store');
+Route::get('devices/{device}/edit', [DeviceController::class, 'edit'])->name('devices.edit');
+Route::put('devices/{device}', [DeviceController::class, 'update'])->name('devices.update');
+Route::delete('devices/{device}', [DeviceController::class, 'destroy'])->name('devices.destroy');
 
 
 // handshake
