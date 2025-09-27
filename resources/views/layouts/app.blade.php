@@ -52,6 +52,7 @@
                 <a class="nav-link px-3 py-2 d-block" href="{{ route('shift-rotations.index') }}"><i class="fa-solid fa-rotate me-2"></i> Shift Rotations</a>
                 <a class="nav-link px-3 py-2 d-block" href="{{ route('shift-assignments.index') }}"><i class="fa-solid fa-user-clock me-2"></i> Shift Assignments</a>
                 <div class="nav-group mt-3">HR & Policy</div>
+                <a class="nav-link px-3 py-2 d-block" href="{{ route('users.index') }}"><i class="fa-solid fa-id-card me-2"></i> Employees</a>
                 <a class="nav-link px-3 py-2 d-block" href="{{ route('holidays.index') }}"><i class="fa-regular fa-calendar-days me-2"></i> Holidays</a>
                 <a class="nav-link px-3 py-2 d-block" href="{{ route('overtime.index') }}"><i class="fa-solid fa-hourglass-half me-2"></i> Overtime</a>
                 <a class="nav-link px-3 py-2 d-block" href="{{ route('reports.index') }}"><i class="fa-solid fa-file-export me-2"></i> Reports</a>

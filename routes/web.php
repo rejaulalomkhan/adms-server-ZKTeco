@@ -25,6 +25,7 @@ use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\OfficeController;
 use App\Http\Controllers\UserOfficeController;
 use App\Http\Controllers\AreaController;
+use App\Http\Controllers\UserController;
 
 
 Route::get('devices', [DeviceController::class, 'Index'])->name('devices.index');
@@ -123,6 +124,16 @@ Route::prefix('areas')->name('areas.')->group(function(){
     Route::get('/{area}/edit', [AreaController::class, 'edit'])->name('edit');
     Route::put('/{area}', [AreaController::class, 'update'])->name('update');
     Route::delete('/{area}', [AreaController::class, 'destroy'])->name('destroy');
+});
+
+// Employees CRUD
+Route::prefix('users')->name('users.')->group(function(){
+    Route::get('/', [UserController::class, 'index'])->name('index');
+    Route::get('/create', [UserController::class, 'create'])->name('create');
+    Route::post('/', [UserController::class, 'store'])->name('store');
+    Route::get('/{user}/edit', [UserController::class, 'edit'])->name('edit');
+    Route::put('/{user}', [UserController::class, 'update'])->name('update');
+    Route::delete('/{user}', [UserController::class, 'destroy'])->name('destroy');
 });
 
 // Shift Rotations CRUD

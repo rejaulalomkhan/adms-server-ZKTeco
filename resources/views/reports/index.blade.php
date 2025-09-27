@@ -1,7 +1,23 @@
 @extends('layouts.app')
 
 @section('content')
-<h4 class="mb-3">Reports</h4>
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h4 class="mb-0">Reports</h4>
+  <div class="d-flex gap-2 align-items-center">
+    <select id="quickRange" class="form-select form-select-sm" style="width:auto">
+      <option value="today" selected>Today</option>
+      <option value="yesterday">Yesterday</option>
+      <option value="this_week">This Week</option>
+      <option value="this_month">This Month</option>
+    </select>
+    <input type="date" id="globalStart" class="form-control form-control-sm" style="width:auto">
+    <input type="date" id="globalEnd" class="form-control form-control-sm" style="width:auto">
+    <button id="applyRange" type="button" class="btn btn-sm btn-outline-primary">Apply</button>
+    <span id="reportsLoader" class="ms-2 d-none">
+      <span class="spinner-border spinner-border-sm text-primary" role="status" aria-hidden="true"></span>
+    </span>
+  </div>
+  </div>
 
 <ul class="nav nav-tabs" id="reportTabs" role="tablist">
   <li class="nav-item" role="presentation">
@@ -17,11 +33,7 @@
 
 <div class="tab-content mt-3">
   <div class="tab-pane fade show active" id="attendance" role="tabpanel">
-    <form id="attendanceForm" class="d-flex gap-2 align-items-center mb-2">
-      <input type="date" name="start_date" class="form-control form-control-sm" required>
-      <input type="date" name="end_date" class="form-control form-control-sm" required>
-      <button class="btn btn-sm btn-outline-primary" type="submit">Load</button>
-    </form>
+    <div class="mb-2 text-muted small">Attendance by day (First In / Last Out). Use the global range above.</div>
     <div class="table-responsive">
       <table id="attendance-table" class="table table-striped table-bordered w-100">
         <thead>
@@ -38,11 +50,7 @@
   </div>
 
   <div class="tab-pane fade" id="lateness" role="tabpanel">
-    <form id="latenessForm" class="d-flex gap-2 align-items-center mb-2">
-      <input type="date" name="start_date" class="form-control form-control-sm" required>
-      <input type="date" name="end_date" class="form-control form-control-sm" required>
-      <button class="btn btn-sm btn-outline-primary" type="submit">Load</button>
-    </form>
+    <div class="mb-2 text-muted small">Late arrivals beyond policy. Use the global range above.</div>
     <div class="table-responsive">
       <table id="lateness-table" class="table table-striped table-bordered w-100">
         <thead>
@@ -58,10 +66,7 @@
   </div>
 
   <div class="tab-pane fade" id="absence" role="tabpanel">
-    <form id="absenceForm" class="d-flex gap-2 align-items-center mb-2">
-      <input type="date" name="date" class="form-control form-control-sm" required>
-      <button class="btn btn-sm btn-outline-primary" type="submit">Load</button>
-    </form>
+    <div class="mb-2 text-muted small">Absences for a single day. Uses the global start date.</div>
     <div class="table-responsive">
       <table id="absence-table" class="table table-striped table-bordered w-100">
         <thead>
@@ -111,9 +116,27 @@ function initTable(selector, url, getParams, columns) {
 }
 
 $(function(){
+  // helpers for range
+  function setRange(range){
+    const now = new Date();
+    const pad = (n)=> String(n).padStart(2,'0');
+    function toYMD(d){ return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`; }
+    let s,e;
+    if(range==='yesterday'){ const y=new Date(now); y.setDate(y.getDate()-1); s=toYMD(y); e=toYMD(y); }
+    else if(range==='this_week'){ const d=new Date(now); const day=d.getDay()||7; const start=new Date(d); start.setDate(d.getDate()-day+1); const end=new Date(start); end.setDate(start.getDate()+6); s=toYMD(start); e=toYMD(end); }
+    else if(range==='this_month'){ const start=new Date(now.getFullYear(), now.getMonth(), 1); const end=new Date(now.getFullYear(), now.getMonth()+1, 0); s=toYMD(start); e=toYMD(end); }
+    else { s=toYMD(now); e=toYMD(now); }
+    document.getElementById('globalStart').value=s; document.getElementById('globalEnd').value=e;
+  }
+  setRange('this_month');
+  document.getElementById('quickRange').addEventListener('change', function(){ setRange(this.value); });
+
+  function getStart(){ return document.getElementById('globalStart').value; }
+  function getEnd(){ return document.getElementById('globalEnd').value; }
+
   const attendanceTable = initTable('#attendance-table', '{{ route('reports.attendance') }}', () => ({
-    start_date: document.querySelector('#attendanceForm [name="start_date"]').value,
-    end_date: document.querySelector('#attendanceForm [name="end_date"]').value,
+    start_date: getStart(),
+    end_date: getEnd(),
   }), [
     { data: 'employee_name', name: 'employee_name' },
     { data: 'work_date', name: 'work_date' },
@@ -121,25 +144,44 @@ $(function(){
     { data: 'last_out', name: 'last_out' },
     { data: 'punches', name: 'punches' },
   ]);
-  document.getElementById('attendanceForm').addEventListener('submit', function(e){ e.preventDefault(); attendanceTable.ajax.reload(); });
 
   const latenessTable = initTable('#lateness-table', '{{ route('reports.lateness') }}', () => ({
-    start_date: document.querySelector('#latenessForm [name="start_date"]').value,
-    end_date: document.querySelector('#latenessForm [name="end_date"]').value,
+    start_date: getStart(),
+    end_date: getEnd(),
   }), [
     { data: 'employee_name', name: 'employee_name' },
     { data: 'work_date', name: 'work_date' },
     { data: 'first_in', name: 'first_in' },
     { data: 'late_minutes', name: 'late_minutes' },
   ]);
-  document.getElementById('latenessForm').addEventListener('submit', function(e){ e.preventDefault(); latenessTable.ajax.reload(); });
 
   const absenceTable = initTable('#absence-table', '{{ route('reports.absence') }}', () => ({
-    date: document.querySelector('#absenceForm [name="date"]').value,
+    date: getStart(),
   }), [
     { data: 'employee_name', name: 'employee_name' },
   ]);
-  document.getElementById('absenceForm').addEventListener('submit', function(e){ e.preventDefault(); absenceTable.ajax.reload(); });
+
+  const loader = document.getElementById('reportsLoader');
+  function showLoader(){ loader && loader.classList.remove('d-none'); }
+  function hideLoader(){ loader && loader.classList.add('d-none'); }
+
+  // hide loader when each table finishes
+  $('#attendance-table').on('xhr.dt', function(){ hideLoader(); });
+  $('#lateness-table').on('xhr.dt', function(){ hideLoader(); });
+  $('#absence-table').on('xhr.dt', function(){ hideLoader(); });
+
+  document.getElementById('applyRange').addEventListener('click', function(e){
+    e.preventDefault();
+    showLoader();
+    attendanceTable.ajax.reload();
+    latenessTable.ajax.reload();
+    absenceTable.ajax.reload();
+  });
+  // initial load
+  showLoader();
+  attendanceTable.ajax.reload();
+  latenessTable.ajax.reload();
+  absenceTable.ajax.reload();
 });
 </script>
 @endsection
