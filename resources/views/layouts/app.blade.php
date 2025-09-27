@@ -25,6 +25,10 @@
         .topbar .user { display:flex; align-items:center; gap:10px; }
         .main { padding: 16px; }
         .sidebar-toggle { display:none; }
+        .dev-credit { position: fixed; right: 12px; bottom: 12px; z-index: 1050; font-size: 12px; color: #64748b; }
+        .dev-credit a { text-decoration: none; color: inherit; background: rgba(255,255,255,.9); border: 1px solid #e5e7eb; padding: 6px 10px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,.05); }
+        .dev-credit a:hover { background: #ffffff; color: #0b2447; }
+        .dev-credit .dev-name { font-weight: 700; color: #16a34a; }
         @media (max-width: 991.98px) {
             .sidebar { position: fixed; left: -100%; transition: left .3s ease; z-index: 1030; }
             body.sidebar-open .sidebar { left: 0; }
@@ -89,6 +93,10 @@
                 </div>
             </main>
         </div>
+    </div>
+
+    <div class="dev-credit">
+        <a href="https://fb.com/armanaazij" target="_blank" rel="noopener">Developer: <span class="dev-name">Arman azij</span></a>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.5.1.js"></script>

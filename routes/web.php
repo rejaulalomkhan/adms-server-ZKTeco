@@ -66,8 +66,8 @@ Route::prefix('shifts')->name('shifts.')->group(function () {
 });
 
 // Dashboard page
-Route::get('/dashboard', [WebDashboardController::class, 'summary'])->name('dashboard.json');
-Route::view('/dashboard/ui', 'dashboard.index')->name('dashboard.index');
+Route::view('/dashboard', 'dashboard.index')->name('dashboard.index');
+Route::redirect('/dashboard/ui', '/dashboard');
 
 // Holidays CRUD
 Route::prefix('holidays')->name('holidays.')->group(function () {
