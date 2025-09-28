@@ -53,7 +53,16 @@ class DashboardController extends Controller
 
         $rows = DB::table('attendances')
             ->leftJoin('users', 'users.id', '=', 'attendances.employee_id')
-            ->select('attendances.id', 'attendances.employee_id', 'users.name as employee_name', 'attendances.timestamp', 'attendances.sn')
+            ->leftJoin('offices', 'offices.id', '=', 'users.office_id')
+            ->select(
+                'attendances.id',
+                'attendances.employee_id',
+                'users.name as employee_name',
+                'users.profile_image as employee_profile_image',
+                'offices.name as employee_designation',
+                'attendances.timestamp',
+                'attendances.sn'
+            )
             ->orderBy('attendances.timestamp', 'desc')
             ->limit($limit)
             ->get();

@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Office;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use App\Models\ShiftAssignment;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use Illuminate\Support\Str;
@@ -36,9 +37,16 @@ class UserController extends Controller
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:6',
             'office_id' => 'nullable|exists:offices,id',
+            'designation' => 'nullable|string|max:255',
+            'department' => 'nullable|string|max:255',
+            'join_date' => 'nullable|date',
             'roles' => 'array',
             'roles.*' => 'exists:roles,name',
             'profile_image' => 'nullable|image|max:2048',
+            'documents.*' => 'file|max:4096',
+            'documents_types.*' => 'nullable|string|max:100',
+            'fingerprint_id' => 'nullable|string|max:64|unique:users,fingerprint_id',
+            'shift_id' => 'nullable|exists:shifts,id',
         ]);
 
         $user = User::create([
@@ -46,6 +54,10 @@ class UserController extends Controller
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
             'office_id' => $validated['office_id'] ?? null,
+            'designation' => $validated['designation'] ?? null,
+            'department' => $validated['department'] ?? null,
+            'join_date' => $validated['join_date'] ?? null,
+            'fingerprint_id' => $validated['fingerprint_id'] ?? null,
         ]);
 
         if (!empty($validated['roles'])) {
@@ -57,6 +69,30 @@ class UserController extends Controller
             $path = $request->file('profile_image')->store("employees/{$employeeSlug}", 'public');
             $user->profile_image = $path;
             $user->save();
+        }
+
+        // Store additional documents
+        if ($request->hasFile('documents')) {
+            $employeeSlug = Str::slug($user->name ?: ('user-'.$user->id));
+            foreach ($request->file('documents') as $idx => $doc) {
+                $stored = $doc->store("employees/{$employeeSlug}/documents", 'public');
+                $user->documents()->create([
+                    'type' => $request->input('documents_types.'.$idx),
+                    'path' => $stored,
+                    'original_name' => $doc->getClientOriginalName(),
+                ]);
+            }
+        }
+
+        // Assign shift if provided
+        if (!empty($validated['shift_id'])) {
+            ShiftAssignment::create([
+                'employee_id' => $user->id,
+                'shift_id' => $validated['shift_id'],
+                'start_date' => now()->toDateString(),
+                'priority' => 1,
+                'reason' => 'Assigned on create',
+            ]);
         }
         // No direct permissions here
 
@@ -80,9 +116,16 @@ class UserController extends Controller
             'email' => 'required|email|unique:users,email,'.$user->id,
             'password' => 'nullable|string|min:6',
             'office_id' => 'nullable|exists:offices,id',
+            'designation' => 'nullable|string|max:255',
+            'department' => 'nullable|string|max:255',
+            'join_date' => 'nullable|date',
             'roles' => 'array',
             'roles.*' => 'exists:roles,name',
             'profile_image' => 'nullable|image|max:2048',
+            'documents.*' => 'file|max:4096',
+            'documents_types.*' => 'nullable|string|max:100',
+            'fingerprint_id' => 'nullable|string|max:64|unique:users,fingerprint_id,'.$user->id,
+            'shift_id' => 'nullable|exists:shifts,id',
         ]);
 
         $user->name = $validated['name'];
@@ -91,6 +134,10 @@ class UserController extends Controller
             $user->password = Hash::make($validated['password']);
         }
         $user->office_id = $validated['office_id'] ?? null;
+        $user->designation = $validated['designation'] ?? null;
+        $user->department = $validated['department'] ?? null;
+        $user->join_date = $validated['join_date'] ?? null;
+        $user->fingerprint_id = $validated['fingerprint_id'] ?? null;
         $user->save();
 
         // Update roles/permissions
@@ -101,6 +148,27 @@ class UserController extends Controller
             $path = $request->file('profile_image')->store("employees/{$employeeSlug}", 'public');
             $user->profile_image = $path;
             $user->save();
+        }
+        if ($request->hasFile('documents')) {
+            $employeeSlug = Str::slug($user->name ?: ('user-'.$user->id));
+            foreach ($request->file('documents') as $idx => $doc) {
+                $stored = $doc->store("employees/{$employeeSlug}/documents", 'public');
+                $user->documents()->create([
+                    'type' => $request->input('documents_types.'.$idx),
+                    'path' => $stored,
+                    'original_name' => $doc->getClientOriginalName(),
+                ]);
+            }
+        }
+
+        if (!empty($validated['shift_id'])) {
+            ShiftAssignment::create([
+                'employee_id' => $user->id,
+                'shift_id' => $validated['shift_id'],
+                'start_date' => now()->toDateString(),
+                'priority' => 1,
+                'reason' => 'Assigned on update',
+            ]);
         }
         // No direct permissions here
 

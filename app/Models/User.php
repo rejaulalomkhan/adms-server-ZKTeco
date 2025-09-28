@@ -21,6 +21,11 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'profile_image',
+        'designation',
+        'department',
+        'join_date',
+        'fingerprint_id',
         'password',
     ];
 
@@ -42,5 +47,11 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
+        'join_date' => 'date',
     ];
+
+    public function documents()
+    {
+        return $this->hasMany(\App\Models\EmployeeDocument::class);
+    }
 }

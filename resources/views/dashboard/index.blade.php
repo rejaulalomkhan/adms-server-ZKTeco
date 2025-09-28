@@ -69,8 +69,7 @@
             <thead>
               <tr>
                 <th>Time</th>
-                <th>Emp</th>
-                <th>SN</th>
+                <th>Employee</th>
               </tr>
             </thead>
             <tbody id="recent-body">
@@ -86,6 +85,15 @@
   </div>
 
 <script>
+function formatTime(ts) {
+  const d = new Date(ts);
+  let h = d.getHours();
+  const m = String(d.getMinutes()).padStart(2, '0');
+  const suffix = h >= 12 ? 'PM' : 'AM';
+  h = h % 12;
+  if (h === 0) h = 12;
+  return `${h}:${m} ${suffix}`;
+}
 async function loadSummary() {
   const range = document.getElementById('range').value;
   const dateVal = document.getElementById('date').value;
@@ -107,7 +115,22 @@ async function loadRecent() {
   body.innerHTML = '';
   rows.forEach(r => {
     const tr = document.createElement('tr');
-    tr.innerHTML = `<td>${r.timestamp}</td><td>${r.employee_name ?? r.employee_id}</td><td>${r.sn}</td>`;
+    const name = r.employee_name ?? r.employee_id;
+    const designation = r.employee_designation ?? '-';
+    const imgSrc = r.employee_profile_image ? (`/storage/${r.employee_profile_image}`) : (`https://ui-avatars.com/api/?background=0D8ABC&color=fff&name=${encodeURIComponent(name)}`);
+    tr.innerHTML = `
+      <td>${formatTime(r.timestamp)}</td>
+      <td>
+        <div class="d-flex align-items-start gap-2">
+          <img src="${imgSrc}" class="rounded-circle" width="32" height="32" alt="${name}">
+          <div>
+            <div class="fw-semibold">${name}</div>
+            <div class="text-muted small">${designation}</div>
+            <div class="text-muted small">ID: ${r.employee_id}</div>
+          </div>
+        </div>
+      </td>
+    `;
     body.appendChild(tr);
   });
 }

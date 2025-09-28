@@ -38,12 +38,53 @@
     </div>
 
     <div class="col-md-6">
+        <label class="form-label">Designation</label>
+        <input type="text" name="designation" class="form-control" value="{{ old('designation', $user->designation) }}">
+    </div>
+    <div class="col-md-6">
+        <label class="form-label">Department</label>
+        <input type="text" name="department" class="form-control" value="{{ old('department', $user->department) }}">
+    </div>
+    <div class="col-md-6">
+        <label class="form-label">Join Date</label>
+        <input type="date" name="join_date" class="form-control" value="{{ old('join_date', optional($user->join_date)->format('Y-m-d')) }}">
+    </div>
+    <div class="col-md-6">
+        <label class="form-label">Fingerprint ID</label>
+        <input type="text" name="fingerprint_id" class="form-control" value="{{ old('fingerprint_id', $user->fingerprint_id) }}">
+    </div>
+    <div class="col-md-6">
+        <label class="form-label">Assign Shift</label>
+        <select name="shift_id" class="form-select">
+            <option value="">-- None --</option>
+            @foreach(\App\Models\Shift::orderBy('name')->get(['id','name']) as $s)
+                <option value="{{ $s->id }}" {{ old('shift_id')===$s->id ? 'selected' : '' }}>{{ $s->name }}</option>
+            @endforeach
+        </select>
+    </div>
+
+    <div class="col-md-6">
         <label class="form-label">Role</label>
         <select name="roles[]" class="form-select">
             @foreach($roles as $r)
                 <option value="{{ $r->name }}" {{ in_array($r->name, old('roles', $userRoleNames)) ? 'selected' : '' }}>{{ $r->name }}</option>
             @endforeach
         </select>
+    </div>
+
+    <div class="col-12">
+        <hr>
+        <h6>Documents</h6>
+        <div class="row g-2">
+            <div class="col-md-6">
+                <label class="form-label">Upload Files</label>
+                <input type="file" name="documents[]" class="form-control" multiple>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Document Types (comma separated)</label>
+                <input type="text" name="documents_types[]" class="form-control" placeholder="e.g. nominee_photo, certificate, official_doc">
+            </div>
+        </div>
     </div>
 
     <div class="col-12">
