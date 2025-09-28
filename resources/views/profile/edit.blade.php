@@ -25,10 +25,28 @@
     <label class="form-label">Confirm Password</label>
     <input type="password" name="password_confirmation" class="form-control" placeholder="Confirm new password">
   </div>
+  <div class="col-md-6">
+    <label class="form-label">Profile Image</label>
+    <input type="file" name="profile_image" accept="image/*" class="form-control" onchange="previewProfileAvatar(event)">
+    @if($user->profile_image)
+      <div class="mt-2">
+        <img id="profileAvatarPreview" src="{{ asset('storage/'.$user->profile_image) }}" alt="Current profile" class="rounded-circle" width="80" height="80">
+      </div>
+    @endif
+  </div>
   <div class="col-12">
     <button type="submit" class="btn btn-primary">Update Profile</button>
   </div>
 </form>
+<script>
+function previewProfileAvatar(e){
+  const file = e.target.files && e.target.files[0];
+  if(!file) return;
+  const url = URL.createObjectURL(file);
+  const img = document.getElementById('profileAvatarPreview');
+  if(img) img.src = url;
+}
+</script>
 @endsection
 
 

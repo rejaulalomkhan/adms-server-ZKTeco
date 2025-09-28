@@ -16,6 +16,7 @@
       <tr>
         <th>ID</th>
         <th>Name</th>
+        <th>Photo</th>
         <th>Email</th>
         <th>Office</th>
         <th>Action</th>
@@ -26,6 +27,13 @@
       <tr>
         <td>{{ $u->id }}</td>
         <td>{{ $u->name }}</td>
+        <td>
+          @if($u->profile_image)
+            <img src="{{ asset('storage/'.$u->profile_image) }}" alt="{{ $u->name }}" class="rounded-circle" width="40" height="40">
+          @else
+            <img src="https://ui-avatars.com/api/?background=0D8ABC&color=fff&name={{ urlencode($u->name) }}" class="rounded-circle" width="40" height="40" alt="avatar">
+          @endif
+        </td>
         <td>{{ $u->email }}</td>
         <td>{{ $u->office_name }}</td>
         <td>

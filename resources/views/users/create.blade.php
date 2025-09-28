@@ -3,7 +3,7 @@
 @section('content')
 <h4 class="mb-3">Add Employee</h4>
 
-<form method="POST" action="{{ route('users.store') }}" class="row g-3">
+<form method="POST" action="{{ route('users.store') }}" class="row g-3" enctype="multipart/form-data">
     @csrf
     <div class="col-md-6">
         <label class="form-label">Name</label>
@@ -16,6 +16,14 @@
     <div class="col-md-6">
         <label class="form-label">Password</label>
         <input type="password" name="password" class="form-control" required>
+    </div>
+    <div class="col-md-6">
+        <label class="form-label">Profile Image</label>
+        <input type="file" name="profile_image" accept="image/*" class="form-control" onchange="previewCreateAvatar(event)">
+        <div class="mt-2">
+            <img id="createAvatarPreview" src="https://ui-avatars.com/api/?background=0D8ABC&color=fff&name=" class="rounded-circle" width="80" height="80" alt="preview">
+        </div>
+        <small class="text-muted">Max size 2MB</small>
     </div>
     <div class="col-md-6">
         <label class="form-label">Office</label>
@@ -39,6 +47,15 @@
         <a href="{{ route('users.index') }}" class="btn btn-secondary">Cancel</a>
     </div>
 </form>
+<script>
+function previewCreateAvatar(e){
+  const file = e.target.files && e.target.files[0];
+  if(!file) return;
+  const url = URL.createObjectURL(file);
+  const img = document.getElementById('createAvatarPreview');
+  img.src = url;
+}
+</script>
 @endsection
 
 

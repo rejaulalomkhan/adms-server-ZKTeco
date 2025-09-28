@@ -26,6 +26,7 @@ class ProfileController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,'.$user->id,
             'password' => 'nullable|string|min:6|confirmed',
+            'profile_image' => 'nullable|image|max:2048',
         ]);
 
         $user->name = $validated['name'];
@@ -34,6 +35,13 @@ class ProfileController extends Controller
             $user->password = Hash::make($validated['password']);
         }
         $user->save();
+
+        if ($request->hasFile('profile_image')) {
+            $employeeSlug = \Illuminate\Support\Str::slug($user->name ?: ('user-'.$user->id));
+            $path = $request->file('profile_image')->store("employees/{$employeeSlug}", 'public');
+            $user->profile_image = $path;
+            $user->save();
+        }
 
         return redirect()->route('profile.edit')->with('success', 'Profile updated');
     }

@@ -105,7 +105,12 @@
                     @auth
                     <div class="dropdown">
                         <a class="d-flex align-items-center text-decoration-none dropdown-toggle" href="#" id="userMenu" data-bs-toggle="dropdown" aria-expanded="false">
-                            <img src="https://ui-avatars.com/api/?background=0D8ABC&color=fff&name={{ urlencode(Auth::user()->name ?? 'Guest') }}" alt="avatar" class="rounded-circle" width="28" height="28">
+                            @php($authUser = Auth::user())
+                            @if($authUser && $authUser->profile_image)
+                                <img src="{{ asset('storage/'.$authUser->profile_image) }}" alt="avatar" class="rounded-circle" width="28" height="28">
+                            @else
+                                <img src="https://ui-avatars.com/api/?background=0D8ABC&color=fff&name={{ urlencode(Auth::user()->name ?? 'Guest') }}" alt="avatar" class="rounded-circle" width="28" height="28">
+                            @endif
                             <span class="ms-2">{{ Auth::user()->name ?? 'Guest' }}</span>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">

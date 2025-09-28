@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
+use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
@@ -37,6 +38,7 @@ class UserController extends Controller
             'office_id' => 'nullable|exists:offices,id',
             'roles' => 'array',
             'roles.*' => 'exists:roles,name',
+            'profile_image' => 'nullable|image|max:2048',
         ]);
 
         $user = User::create([
@@ -48,6 +50,13 @@ class UserController extends Controller
 
         if (!empty($validated['roles'])) {
             $user->syncRoles($validated['roles']);
+        }
+        // Handle profile image upload into per-employee folder under storage/app/public/employees/{slug}/
+        if ($request->hasFile('profile_image')) {
+            $employeeSlug = Str::slug($user->name ?: ('user-'.$user->id));
+            $path = $request->file('profile_image')->store("employees/{$employeeSlug}", 'public');
+            $user->profile_image = $path;
+            $user->save();
         }
         // No direct permissions here
 
@@ -73,8 +82,7 @@ class UserController extends Controller
             'office_id' => 'nullable|exists:offices,id',
             'roles' => 'array',
             'roles.*' => 'exists:roles,name',
-            'permissions' => 'array',
-            'permissions.*' => 'exists:permissions,name',
+            'profile_image' => 'nullable|image|max:2048',
         ]);
 
         $user->name = $validated['name'];
@@ -87,6 +95,13 @@ class UserController extends Controller
 
         // Update roles/permissions
         $user->syncRoles($validated['roles'] ?? []);
+        // Update profile image
+        if ($request->hasFile('profile_image')) {
+            $employeeSlug = Str::slug($user->name ?: ('user-'.$user->id));
+            $path = $request->file('profile_image')->store("employees/{$employeeSlug}", 'public');
+            $user->profile_image = $path;
+            $user->save();
+        }
         // No direct permissions here
 
         return redirect()->route('users.index')->with('success', 'Employee updated');

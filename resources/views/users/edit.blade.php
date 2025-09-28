@@ -3,7 +3,7 @@
 @section('content')
 <h4 class="mb-3">Edit Employee</h4>
 
-<form method="POST" action="{{ route('users.update', $user->id) }}" class="row g-3">
+<form method="POST" action="{{ route('users.update', $user->id) }}" class="row g-3" enctype="multipart/form-data">
     @csrf
     @method('PUT')
     <div class="col-md-6">
@@ -17,6 +17,15 @@
     <div class="col-md-6">
         <label class="form-label">Password</label>
         <input type="password" name="password" class="form-control" placeholder="Leave blank to keep current">
+    </div>
+    <div class="col-md-6">
+        <label class="form-label">Profile Image</label>
+        <input type="file" name="profile_image" accept="image/*" class="form-control" onchange="previewEditAvatar(event)">
+        @if($user->profile_image)
+        <div class="mt-2">
+            <img id="editAvatarPreview" src="{{ asset('storage/'.$user->profile_image) }}" alt="Current profile" class="rounded-circle" width="80" height="80">
+        </div>
+        @endif
     </div>
     <div class="col-md-6">
         <label class="form-label">Office</label>
@@ -42,6 +51,15 @@
         <a href="{{ route('users.index') }}" class="btn btn-secondary">Cancel</a>
     </div>
 </form>
+<script>
+function previewEditAvatar(e){
+  const file = e.target.files && e.target.files[0];
+  if(!file) return;
+  const url = URL.createObjectURL(file);
+  const img = document.getElementById('editAvatarPreview');
+  if(img) img.src = url;
+}
+</script>
 @endsection
 
 
