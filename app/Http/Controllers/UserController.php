@@ -6,6 +6,8 @@ use App\Models\User;
 use App\Models\Office;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
 
 class UserController extends Controller
 {
@@ -21,7 +23,9 @@ class UserController extends Controller
     public function create()
     {
         $offices = Office::orderBy('name')->get(['id','name']);
-        return view('users.create', compact('offices'));
+        $roles = Role::orderBy('name')->get(['id','name']);
+        $permissions = Permission::orderBy('name')->get(['id','name']);
+        return view('users.create', compact('offices','roles','permissions'));
     }
 
     public function store(Request $request)
@@ -31,14 +35,21 @@ class UserController extends Controller
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:6',
             'office_id' => 'nullable|exists:offices,id',
+            'roles' => 'array',
+            'roles.*' => 'exists:roles,name',
         ]);
 
-        User::create([
+        $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
             'office_id' => $validated['office_id'] ?? null,
         ]);
+
+        if (!empty($validated['roles'])) {
+            $user->syncRoles($validated['roles']);
+        }
+        // No direct permissions here
 
         return redirect()->route('users.index')->with('success', 'Employee created');
     }
@@ -46,7 +57,11 @@ class UserController extends Controller
     public function edit(User $user)
     {
         $offices = Office::orderBy('name')->get(['id','name']);
-        return view('users.edit', compact('user','offices'));
+        $roles = Role::orderBy('name')->get(['id','name']);
+        $permissions = Permission::orderBy('name')->get(['id','name']);
+        $userRoleNames = $user->roles()->pluck('name')->toArray();
+        $userPermissionNames = $user->permissions()->pluck('name')->toArray();
+        return view('users.edit', compact('user','offices','roles','permissions','userRoleNames','userPermissionNames'));
     }
 
     public function update(Request $request, User $user)
@@ -56,6 +71,10 @@ class UserController extends Controller
             'email' => 'required|email|unique:users,email,'.$user->id,
             'password' => 'nullable|string|min:6',
             'office_id' => 'nullable|exists:offices,id',
+            'roles' => 'array',
+            'roles.*' => 'exists:roles,name',
+            'permissions' => 'array',
+            'permissions.*' => 'exists:permissions,name',
         ]);
 
         $user->name = $validated['name'];
@@ -65,6 +84,10 @@ class UserController extends Controller
         }
         $user->office_id = $validated['office_id'] ?? null;
         $user->save();
+
+        // Update roles/permissions
+        $user->syncRoles($validated['roles'] ?? []);
+        // No direct permissions here
 
         return redirect()->route('users.index')->with('success', 'Employee updated');
     }

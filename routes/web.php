@@ -26,6 +26,10 @@ use App\Http\Controllers\OfficeController;
 use App\Http\Controllers\UserOfficeController;
 use App\Http\Controllers\AreaController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\RolesController;
+use App\Http\Controllers\PermissionsController;
 
 
 Route::get('devices', [DeviceController::class, 'Index'])->name('devices.index');
@@ -50,12 +54,19 @@ Route::get('/iclock/getrequest', [iclockController::class, 'getrequest']);
 
 
 
-Route::get('/', function () {
-    return redirect('dashboard');
-});
+Route::get('/', function () { return redirect('dashboard'); });
+
+// Auth
+Route::get('/login', [AuthController::class, 'showLogin'])->name('login')->middleware('guest');
+Route::post('/login', [AuthController::class, 'login'])->middleware('guest');
+Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth');
+
+// Profile
+Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit')->middleware('auth');
+Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update')->middleware('auth');
 
 // Shifts CRUD
-Route::prefix('shifts')->name('shifts.')->group(function () {
+Route::prefix('shifts')->name('shifts.')->middleware('auth')->group(function () {
     Route::get('/', [ShiftController::class, 'index'])->name('index');
     Route::get('/data', [ShiftController::class, 'data'])->name('data');
     Route::get('/create', [ShiftController::class, 'create'])->name('create');
@@ -65,12 +76,12 @@ Route::prefix('shifts')->name('shifts.')->group(function () {
     Route::delete('/{shift}', [ShiftController::class, 'destroy'])->name('destroy');
 });
 
-// Dashboard page
-Route::view('/dashboard', 'dashboard.index')->name('dashboard.index');
-Route::redirect('/dashboard/ui', '/dashboard');
+// Dashboard page (protected)
+Route::view('/dashboard', 'dashboard.index')->name('dashboard.index')->middleware('auth');
+Route::redirect('/dashboard/ui', '/dashboard')->middleware('auth');
 
 // Holidays CRUD
-Route::prefix('holidays')->name('holidays.')->group(function () {
+Route::prefix('holidays')->name('holidays.')->middleware('auth')->group(function () {
     Route::get('/', [HolidayController::class, 'index'])->name('index');
     Route::get('/data', [HolidayController::class, 'data'])->name('data');
     Route::get('/create', [HolidayController::class, 'create'])->name('create');
@@ -81,7 +92,7 @@ Route::prefix('holidays')->name('holidays.')->group(function () {
 });
 
 // Overtime
-Route::prefix('overtime')->name('overtime.')->group(function(){
+Route::prefix('overtime')->name('overtime.')->middleware('auth')->group(function(){
     Route::get('/', [OvertimeController::class, 'index'])->name('index');
     Route::get('/data', [OvertimeController::class, 'data'])->name('data');
     Route::post('/calculate', [OvertimeController::class, 'calculate'])->name('calculate');
@@ -89,7 +100,7 @@ Route::prefix('overtime')->name('overtime.')->group(function(){
 });
 
 // Reports
-Route::prefix('reports')->name('reports.')->group(function(){
+Route::prefix('reports')->name('reports.')->middleware('auth')->group(function(){
     Route::get('/', [ReportsController::class, 'index'])->name('index');
     Route::get('/attendance', [ReportsController::class, 'attendanceData'])->name('attendance');
     Route::get('/lateness', [ReportsController::class, 'latenessData'])->name('lateness');
@@ -97,7 +108,7 @@ Route::prefix('reports')->name('reports.')->group(function(){
 });
 
 // Offices CRUD
-Route::prefix('offices')->name('offices.')->group(function(){
+Route::prefix('offices')->name('offices.')->middleware('auth')->group(function(){
     Route::get('/', [OfficeController::class, 'index'])->name('index');
     Route::get('/data', [OfficeController::class, 'data'])->name('data');
     Route::get('/create', [OfficeController::class, 'create'])->name('create');
@@ -108,7 +119,7 @@ Route::prefix('offices')->name('offices.')->group(function(){
 });
 
 // Users -> Office assignment
-Route::prefix('user-offices')->name('user-offices.')->group(function(){
+Route::prefix('user-offices')->name('user-offices.')->middleware('auth')->group(function(){
     Route::get('/', [UserOfficeController::class, 'index'])->name('index');
     Route::get('/data', [UserOfficeController::class, 'data'])->name('data');
     Route::get('/{user}/edit', [UserOfficeController::class, 'edit'])->name('edit');
@@ -116,7 +127,7 @@ Route::prefix('user-offices')->name('user-offices.')->group(function(){
 });
 
 // Areas CRUD
-Route::prefix('areas')->name('areas.')->group(function(){
+Route::prefix('areas')->name('areas.')->middleware('auth')->group(function(){
     Route::get('/', [AreaController::class, 'index'])->name('index');
     Route::get('/data', [AreaController::class, 'data'])->name('data');
     Route::get('/create', [AreaController::class, 'create'])->name('create');
@@ -126,8 +137,8 @@ Route::prefix('areas')->name('areas.')->group(function(){
     Route::delete('/{area}', [AreaController::class, 'destroy'])->name('destroy');
 });
 
-// Employees CRUD
-Route::prefix('users')->name('users.')->group(function(){
+// Employees CRUD - Super Admin only
+Route::prefix('users')->name('users.')->middleware(['auth','role:Super Admin'])->group(function(){
     Route::get('/', [UserController::class, 'index'])->name('index');
     Route::get('/create', [UserController::class, 'create'])->name('create');
     Route::post('/', [UserController::class, 'store'])->name('store');
@@ -136,8 +147,26 @@ Route::prefix('users')->name('users.')->group(function(){
     Route::delete('/{user}', [UserController::class, 'destroy'])->name('destroy');
 });
 
+// Roles & Permissions - Super Admin only
+Route::middleware(['auth','role:Super Admin'])->group(function(){
+    Route::prefix('roles')->name('roles.')->group(function(){
+        Route::get('/', [RolesController::class, 'index'])->name('index');
+        Route::get('/create', [RolesController::class, 'create'])->name('create');
+        Route::post('/', [RolesController::class, 'store'])->name('store');
+        Route::get('/{role}/edit', [RolesController::class, 'edit'])->name('edit');
+        Route::put('/{role}', [RolesController::class, 'update'])->name('update');
+        Route::delete('/{role}', [RolesController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::prefix('permissions')->name('permissions.')->group(function(){
+        Route::get('/', [PermissionsController::class, 'index'])->name('index');
+        Route::get('/create', [PermissionsController::class, 'create'])->name('create');
+        Route::post('/', [PermissionsController::class, 'store'])->name('store');
+    });
+});
+
 // Shift Rotations CRUD
-Route::prefix('shift-rotations')->name('shift-rotations.')->group(function () {
+Route::prefix('shift-rotations')->name('shift-rotations.')->middleware('auth')->group(function () {
     Route::get('/', [ShiftRotationController::class, 'index'])->name('index');
     Route::get('/data', [ShiftRotationController::class, 'data'])->name('data');
     Route::get('/create', [ShiftRotationController::class, 'create'])->name('create');
@@ -148,7 +177,7 @@ Route::prefix('shift-rotations')->name('shift-rotations.')->group(function () {
 });
 
 // Manual Shift Assignments CRUD
-Route::prefix('shift-assignments')->name('shift-assignments.')->group(function () {
+Route::prefix('shift-assignments')->name('shift-assignments.')->middleware('auth')->group(function () {
     Route::get('/', [ShiftAssignmentController::class, 'index'])->name('index');
     Route::get('/data', [ShiftAssignmentController::class, 'data'])->name('data');
     Route::get('/create', [ShiftAssignmentController::class, 'create'])->name('create');

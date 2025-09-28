@@ -56,7 +56,11 @@
                 <a class="nav-link px-3 py-2 d-block" href="{{ route('shift-rotations.index') }}"><i class="fa-solid fa-rotate me-2"></i> Shift Rotations</a>
                 <a class="nav-link px-3 py-2 d-block" href="{{ route('shift-assignments.index') }}"><i class="fa-solid fa-user-clock me-2"></i> Shift Assignments</a>
                 <div class="nav-group mt-3">HR & Policy</div>
-                <a class="nav-link px-3 py-2 d-block" href="{{ route('users.index') }}"><i class="fa-solid fa-id-card me-2"></i> Employees</a>
+                @role('Super Admin')
+                <a class="nav-link px-3 py-2 d-block" href="{{ route('users.index') }}"><i class="fa-solid fa-id-card me-2"></i> Users</a>
+                <a class="nav-link px-3 py-2 d-block" href="{{ route('roles.index') }}"><i class="fa-solid fa-user-shield me-2"></i> Roles</a>
+                <a class="nav-link px-3 py-2 d-block" href="{{ route('permissions.index') }}"><i class="fa-solid fa-key me-2"></i> Permissions</a>
+                @endrole
                 <a class="nav-link px-3 py-2 d-block" href="{{ route('holidays.index') }}"><i class="fa-regular fa-calendar-days me-2"></i> Holidays</a>
                 <a class="nav-link px-3 py-2 d-block" href="{{ route('overtime.index') }}"><i class="fa-solid fa-hourglass-half me-2"></i> Overtime</a>
                 <a class="nav-link px-3 py-2 d-block" href="{{ route('reports.index') }}"><i class="fa-solid fa-file-export me-2"></i> Reports</a>
@@ -69,22 +73,28 @@
         <div class="content-wrap">
             <header class="topbar">
                 <button class="btn btn-light sidebar-toggle" id="sidebarToggle"><i class="fa-solid fa-bars"></i></button>
-                <div class="ms-auto dropdown">
-                    <a class="d-flex align-items-center text-decoration-none dropdown-toggle" href="#" id="userMenu" data-bs-toggle="dropdown" aria-expanded="false">
-                        <img src="https://ui-avatars.com/api/?background=0D8ABC&color=fff&name={{ urlencode(Auth::user()->name ?? 'Guest') }}" alt="avatar" class="rounded-circle" width="28" height="28">
-                        <span class="ms-2">{{ Auth::user()->name ?? 'Guest' }}</span>
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
-                        <li><a class="dropdown-item" href="#">Edit Profile</a></li>
-                        <li><a class="dropdown-item" href="#">Settings</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li>
-                            <form method="POST" action="{{ url('/logout') }}">
-                                @csrf
-                                <button type="submit" class="dropdown-item">Logout</button>
-                            </form>
-                        </li>
-                    </ul>
+                <div class="ms-auto">
+                    @auth
+                    <div class="dropdown">
+                        <a class="d-flex align-items-center text-decoration-none dropdown-toggle" href="#" id="userMenu" data-bs-toggle="dropdown" aria-expanded="false">
+                            <img src="https://ui-avatars.com/api/?background=0D8ABC&color=fff&name={{ urlencode(Auth::user()->name ?? 'Guest') }}" alt="avatar" class="rounded-circle" width="28" height="28">
+                            <span class="ms-2">{{ Auth::user()->name ?? 'Guest' }}</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
+                            <li><a class="dropdown-item" href="{{ route('profile.edit') }}">Edit Profile</a></li>
+                            <li><a class="dropdown-item" href="#">Settings</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <form method="POST" action="{{ url('/logout') }}">
+                                    @csrf
+                                    <button type="submit" class="dropdown-item">Logout</button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+                    @else
+                        <a class="btn btn-sm btn-outline-primary" href="{{ route('login') }}">Login</a>
+                    @endauth
                 </div>
             </header>
             <main class="main">
