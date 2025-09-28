@@ -10,7 +10,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
     <link href="https://cdn.datatables.net/1.11.4/css/dataTables.bootstrap5.min.css" rel="stylesheet">
     <style>
-        :root { --sidebar-width: 260px; }
+        :root { --sidebar-width: 260px; --sidebar-collapsed-width: 72px; }
         body { min-height: 100vh; }
         .layout { display: flex; min-height: 100vh; }
         .sidebar {
@@ -34,14 +34,24 @@
         .sidebar .brand { display:flex; align-items:center; gap:10px; padding:16px; border-bottom: 1px solid rgba(255,255,255,.1); }
         .sidebar .brand img { width: 28px; height: 28px; }
         .sidebar .brand span { font-weight: 600; font-size: 16px; }
-        .sidebar .nav-link { color: #cbd5e1; border-radius: 8px; }
+        
+        /* Collapsed state */
+        body.sidebar-collapsed .sidebar { width: var(--sidebar-collapsed-width); }
+        body.sidebar-collapsed .content-wrap { margin-left: var(--sidebar-collapsed-width); }
+        body.sidebar-collapsed .sidebar .brand span,
+        body.sidebar-collapsed .sidebar .nav-group,
+        body.sidebar-collapsed .sidebar .nav-text { display: none; }
+        body.sidebar-collapsed .sidebar .nav-link { justify-content: center; }
+        .sidebar .nav-link { color: #cbd5e1; border-radius: 8px; display:flex; align-items:center; }
         .sidebar .nav-link:hover, .sidebar .nav-link.active { color:#fff; background: rgba(255,255,255,.08); }
         .sidebar .nav-group { padding: 8px 16px; text-transform: uppercase; font-size: 11px; color: #94a3b8; }
-        .content-wrap { flex: 1; display:flex; flex-direction:column; background:#f5f7fb; margin-left: var(--sidebar-width); min-height: 100vh; }
+        .sidebar .nav-link i { width: 20px; text-align:center; }
+        .sidebar .nav-text { margin-left: 8px; }
+        .content-wrap { flex: 1; display:flex; flex-direction:column; background:#f5f7fb; margin-left: var(--sidebar-width); min-height: 100vh; transition: margin-left .2s ease; }
         .topbar { height: 56px; background:#ffffff; border-bottom:1px solid #e5e7eb; display:flex; align-items:center; justify-content:space-between; padding:0 16px; position:sticky; top:0; z-index: 1020; }
         .topbar .user { display:flex; align-items:center; gap:10px; }
         .main { padding: 16px; }
-        .sidebar-toggle { display:none; }
+        .sidebar-toggle { display:inline-flex; }
         .dev-credit { position: fixed; right: 12px; bottom: 12px; z-index: 1050; font-size: 12px; color: #64748b; }
         .dev-credit a { text-decoration: none; color: inherit; background: rgba(255,255,255,.9); border: 1px solid #e5e7eb; padding: 6px 10px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,.05); }
         .dev-credit a:hover { background: #ffffff; color: #0b2447; }
@@ -58,39 +68,39 @@
     <div class="layout">
         <aside class="sidebar">
             <div class="brand animate__animated animate__fadeIn">
-                <img src="/favicon.ico" alt="Logo">
-                <span>ADMS Server</span>
+                <img src="{{ asset('img/finger-scan.svg') }}" alt="Logo">
+                <span>Attandance Server</span>
             </div>
             <nav class="p-2">
                 <div class="nav-group">Overview</div>
-                <a class="nav-link px-3 py-2 d-block" href="{{ route('dashboard.index') }}"><i class="fa-solid fa-gauge me-2"></i> Dashboard</a>
+                <a class="nav-link px-3 py-2 d-block" href="{{ route('dashboard.index') }}"><i class="fa-solid fa-gauge"></i><span class="nav-text"> Dashboard</span></a>
                 <div class="nav-group mt-3">Devices</div>
-                <a class="nav-link px-3 py-2 d-block" href="{{ route('devices.index') }}"><i class="fa-solid fa-fingerprint me-2"></i> Devices</a>
-                <a class="nav-link px-3 py-2 d-block" href="{{ route('devices.Attendance') }}"><i class="fa-regular fa-clock me-2"></i> Attendance</a>
-                <a class="nav-link px-3 py-2 d-block" href="{{ route('devices.DeviceLog') }}"><i class="fa-regular fa-file-lines me-2"></i> Device Log</a>
-                <a class="nav-link px-3 py-2 d-block" href="{{ route('devices.FingerLog') }}"><i class="fa-regular fa-hand-point-up me-2"></i> Finger Log</a>
+                <a class="nav-link px-3 py-2 d-block" href="{{ route('devices.index') }}"><i class="fa-solid fa-fingerprint"></i><span class="nav-text"> Devices</span></a>
+                <a class="nav-link px-3 py-2 d-block" href="{{ route('devices.Attendance') }}"><i class="fa-regular fa-clock"></i><span class="nav-text"> Attendance</span></a>
+                <a class="nav-link px-3 py-2 d-block" href="{{ route('devices.DeviceLog') }}"><i class="fa-regular fa-file-lines"></i><span class="nav-text"> Device Log</span></a>
+                <a class="nav-link px-3 py-2 d-block" href="{{ route('devices.FingerLog') }}"><i class="fa-regular fa-hand-point-up"></i><span class="nav-text"> Finger Log</span></a>
                 <div class="nav-group mt-3">Scheduling</div>
-                <a class="nav-link px-3 py-2 d-block" href="{{ route('shifts.index') }}"><i class="fa-solid fa-table-columns me-2"></i> Shifts</a>
-                <a class="nav-link px-3 py-2 d-block" href="{{ route('shift-rotations.index') }}"><i class="fa-solid fa-rotate me-2"></i> Shift Rotations</a>
-                <a class="nav-link px-3 py-2 d-block" href="{{ route('shift-assignments.index') }}"><i class="fa-solid fa-user-clock me-2"></i> Shift Assignments</a>
+                <a class="nav-link px-3 py-2 d-block" href="{{ route('shifts.index') }}"><i class="fa-solid fa-table-columns"></i><span class="nav-text"> Shifts</span></a>
+                <a class="nav-link px-3 py-2 d-block" href="{{ route('shift-rotations.index') }}"><i class="fa-solid fa-rotate"></i><span class="nav-text"> Shift Rotations</span></a>
+                <a class="nav-link px-3 py-2 d-block" href="{{ route('shift-assignments.index') }}"><i class="fa-solid fa-user-clock"></i><span class="nav-text"> Shift Assignments</span></a>
                 <div class="nav-group mt-3">HR & Policy</div>
                 @role('Super Admin')
-                <a class="nav-link px-3 py-2 d-block" href="{{ route('users.index') }}"><i class="fa-solid fa-id-card me-2"></i> Users</a>
-                <a class="nav-link px-3 py-2 d-block" href="{{ route('roles.index') }}"><i class="fa-solid fa-user-shield me-2"></i> Roles</a>
-                <a class="nav-link px-3 py-2 d-block" href="{{ route('permissions.index') }}"><i class="fa-solid fa-key me-2"></i> Permissions</a>
+                <a class="nav-link px-3 py-2 d-block" href="{{ route('users.index') }}"><i class="fa-solid fa-id-card"></i><span class="nav-text"> Users</span></a>
+                <a class="nav-link px-3 py-2 d-block" href="{{ route('roles.index') }}"><i class="fa-solid fa-user-shield"></i><span class="nav-text"> Roles</span></a>
+                <a class="nav-link px-3 py-2 d-block" href="{{ route('permissions.index') }}"><i class="fa-solid fa-key"></i><span class="nav-text"> Permissions</span></a>
                 @endrole
-                <a class="nav-link px-3 py-2 d-block" href="{{ route('holidays.index') }}"><i class="fa-regular fa-calendar-days me-2"></i> Holidays</a>
-                <a class="nav-link px-3 py-2 d-block" href="{{ route('overtime.index') }}"><i class="fa-solid fa-hourglass-half me-2"></i> Overtime</a>
-                <a class="nav-link px-3 py-2 d-block" href="{{ route('reports.index') }}"><i class="fa-solid fa-file-export me-2"></i> Reports</a>
+                <a class="nav-link px-3 py-2 d-block" href="{{ route('holidays.index') }}"><i class="fa-regular fa-calendar-days"></i><span class="nav-text"> Holidays</span></a>
+                <a class="nav-link px-3 py-2 d-block" href="{{ route('overtime.index') }}"><i class="fa-solid fa-hourglass-half"></i><span class="nav-text"> Overtime</span></a>
+                <a class="nav-link px-3 py-2 d-block" href="{{ route('reports.index') }}"><i class="fa-solid fa-file-export"></i><span class="nav-text"> Reports</span></a>
                 <div class="nav-group mt-3">Organization</div>
-                <a class="nav-link px-3 py-2 d-block" href="{{ route('offices.index') }}"><i class="fa-solid fa-building me-2"></i> Offices</a>
-                <a class="nav-link px-3 py-2 d-block" href="{{ route('user-offices.index') }}"><i class="fa-solid fa-users me-2"></i> User Offices</a>
-                <a class="nav-link px-3 py-2 d-block" href="{{ route('areas.index') }}"><i class="fa-solid fa-map-location me-2"></i> Areas</a>
+                <a class="nav-link px-3 py-2 d-block" href="{{ route('offices.index') }}"><i class="fa-solid fa-building"></i><span class="nav-text"> Offices</span></a>
+                <a class="nav-link px-3 py-2 d-block" href="{{ route('user-offices.index') }}"><i class="fa-solid fa-users"></i><span class="nav-text"> User Offices</span></a>
+                <a class="nav-link px-3 py-2 d-block" href="{{ route('areas.index') }}"><i class="fa-solid fa-map-location"></i><span class="nav-text"> Areas</span></a>
             </nav>
         </aside>
         <div class="content-wrap">
             <header class="topbar">
-                <button class="btn btn-light sidebar-toggle" id="sidebarToggle"><i class="fa-solid fa-bars"></i></button>
+                <button class="btn btn-light sidebar-toggle" id="sidebarToggle"><i id="sidebarToggleIcon" class="fa-solid fa-bars"></i></button>
                 <div class="ms-auto">
                     @auth
                     <div class="dropdown">
@@ -134,7 +144,20 @@
     <script src="https://cdn.datatables.net/1.11.4/js/dataTables.bootstrap5.min.js"></script>
     <script>
         document.getElementById('sidebarToggle')?.addEventListener('click', function() {
-            document.body.classList.toggle('sidebar-open');
+            // On desktop toggle collapse; on mobile toggle drawer
+            if (window.matchMedia('(max-width: 991.98px)').matches) {
+                document.body.classList.toggle('sidebar-open');
+            } else {
+                document.body.classList.toggle('sidebar-collapsed');
+            }
+            const icon = document.getElementById('sidebarToggleIcon');
+            if (document.body.classList.contains('sidebar-collapsed') || document.body.classList.contains('sidebar-open')) {
+                icon.classList.remove('fa-bars');
+                icon.classList.add('fa-xmark');
+            } else {
+                icon.classList.remove('fa-xmark');
+                icon.classList.add('fa-bars');
+            }
         });
     </script>
 </body>
