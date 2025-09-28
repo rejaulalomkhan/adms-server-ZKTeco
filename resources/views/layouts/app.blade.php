@@ -13,14 +13,31 @@
         :root { --sidebar-width: 260px; }
         body { min-height: 100vh; }
         .layout { display: flex; min-height: 100vh; }
-        .sidebar { width: var(--sidebar-width); background: #0b2447; color: #fff; position: sticky; top: 0; height: 100vh; }
+        .sidebar {
+            width: var(--sidebar-width);
+            background: #0b2447;
+            color: #fff;
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            height: 100vh;
+            overflow-y: auto;
+            overscroll-behavior: contain;
+            scrollbar-width: thin; /* Firefox */
+            scrollbar-color: rgba(255,255,255,.3) transparent; /* Firefox */
+        }
+        .sidebar::-webkit-scrollbar { width: 6px; }
+        .sidebar::-webkit-scrollbar-track { background: transparent; }
+        .sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,.3); border-radius: 4px; }
+        .sidebar::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,.5); }
         .sidebar .brand { display:flex; align-items:center; gap:10px; padding:16px; border-bottom: 1px solid rgba(255,255,255,.1); }
         .sidebar .brand img { width: 28px; height: 28px; }
         .sidebar .brand span { font-weight: 600; font-size: 16px; }
         .sidebar .nav-link { color: #cbd5e1; border-radius: 8px; }
         .sidebar .nav-link:hover, .sidebar .nav-link.active { color:#fff; background: rgba(255,255,255,.08); }
         .sidebar .nav-group { padding: 8px 16px; text-transform: uppercase; font-size: 11px; color: #94a3b8; }
-        .content-wrap { flex: 1; display:flex; flex-direction:column; background:#f5f7fb; }
+        .content-wrap { flex: 1; display:flex; flex-direction:column; background:#f5f7fb; margin-left: var(--sidebar-width); min-height: 100vh; }
         .topbar { height: 56px; background:#ffffff; border-bottom:1px solid #e5e7eb; display:flex; align-items:center; justify-content:space-between; padding:0 16px; position:sticky; top:0; z-index: 1020; }
         .topbar .user { display:flex; align-items:center; gap:10px; }
         .main { padding: 16px; }
@@ -33,6 +50,7 @@
             .sidebar { position: fixed; left: -100%; transition: left .3s ease; z-index: 1030; }
             body.sidebar-open .sidebar { left: 0; }
             .sidebar-toggle { display:inline-flex; }
+            .content-wrap { margin-left: 0; }
         }
     </style>
 </head>
